@@ -60,10 +60,10 @@ var (
 	OP_SPEC_POP = &operationType{2}
 
 	// Args: cell_name
-	OP_SPEC_DUPE = &operationType{3}
+	OP_SPEC_DUPE = &operationType{6}
 
 	// Args: cell_name
-	OP_SPEC_DROP = &operationType{1}
+	OP_SPEC_DROP = &operationType{2}
 
 	// Args: label_name
 	OP_SPEC_DEF_LABEL = &operationType{1}
@@ -72,10 +72,10 @@ var (
 	OP_SPEC_JUMP = &operationType{1}
 
 	// Args: var_name cell_name
-	OP_SPEC_SET_VAR = &operationType{1}
+	OP_SPEC_SET_VAR = &operationType{2}
 
 	// Args: var_name cell_name
-	OP_SPEC_GET_VAR = &operationType{1}
+	OP_SPEC_GET_VAR = &operationType{2}
 )
 
 type operation struct {

@@ -9,13 +9,24 @@ import (
 func takeLabels(code *Code) (labs map[string]int) {
 	labs = make(map[string]int)
 	newops := []*operation{}
+
+	// Each special instruction has its own instruction set
+	// For example stack operations is 2 instructions
+	// Need to remember that to make precise labels work
+	var instruction = 0
+
+	// Everytime we delete something then all the elements shifts
+	// Need to be up to that shifts to not miss after couple of them
 	var shift = 0
-	for id, op := range code.Operations {
+
+	// Loop
+	for _, op := range code.Operations {
 		if op.Type == OP_SPEC_DEF_LABEL {
-			labs[op.Args[0]] = id - shift
-			shift += 1
+			labs[op.Args[0]] = instruction - shift
+			shift += op.Type.Steps
 			continue
 		}
+		instruction += op.Type.Steps
 		newops = append(newops, op)
 	}
 	code.Operations = newops
