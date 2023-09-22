@@ -14,13 +14,14 @@ func removeEmty(arr []string) (out []string) {
 	return out
 }
 
-func Lex(src string) []string {
-	return removeEmty(
-		strings.Split(strings.ReplaceAll(src, "\t", " "), " "),
-	)
+func lex(src string) []string {
+	src = strings.ReplaceAll(src, "\t", " ")
+	src = strings.ReplaceAll(src, "\n", " ")
+	src = strings.ReplaceAll(src, "\r", " ")
+	return removeEmty(strings.Split(src, " "))
 }
 
-func LexNumber(tok string) (n int64, ok bool) {
+func lexNumber(tok string) (n int64, ok bool) {
 	n, err := strconv.ParseInt(tok, 10, 32)
 	if err != nil {
 		return 0, false

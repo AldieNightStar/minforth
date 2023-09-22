@@ -1,62 +1,35 @@
 package minforth
 
-import "fmt"
+import "strings"
 
 type Code struct {
-	StackCell string
-	Lines     []string
+	StackCell   string
+	MessageCell string
+	Operations  []*operation
 }
 
-func (c *Code) GetLine() int {
-	return len(c.Lines)
-}
-
-func (c *Code) SetMem(name string, value int) {
-	c.Lines = append(
-		c.Lines,
-		fmt.Sprintf("set %s %d", name, value),
-	)
-}
-
-// op could be: add, sub, div, mul
-func (c *Code) Operate(name string, op string, val2 string) {
-	c.Lines = append(
-		c.Lines,
-		fmt.Sprintf("op %s %s %s", op, name, val2),
-	)
-}
-
-func (c *Code) CellWrite(name string, id int) {
-	c.Lines = append(
-		c.Lines,
-		fmt.Sprintf("write %s %s %d", name, c.StackCell, id),
-	)
-}
-
-func (c *Code) CellRead(name string, id int) {
-	c.Lines = append(
-		c.Lines,
-		fmt.Sprintf("read %s %s %d", name, c.StackCell, id),
-	)
-}
-
-func (c *Code) PushStack(value int) {
-	c.Lines = append(
-		c.Lines,
-		fmt.Sprint("op"),
-	)
-}
-
-func (c *Code) Jump(line int) {
-	c.Lines = append(
-		c.Lines,
-		fmt.Sprintf("jump %d always false", line),
-	)
-}
-
-func NewCode(stackCell string) *Code {
-	return &Code{
-		StackCell: stackCell,
-		Lines:     make([]string, 0, 32),
+func newCode(stackCell, messageCell string) *Code {
+	code := &Code{
+		StackCell:   stackCell,
+		MessageCell: messageCell,
+		Operations:  make([]*operation, 0, 8),
 	}
+	code.Add(newOperation(OP_SET, "SP", "0"))
+	return code
+}
+
+func (c *Code) Add(op *operation) {
+	c.Operations = append(c.Operations, op)
+}
+
+func (c *Code) String() (string, error) {
+	var arr []string
+	for _, op := range c.Operations {
+		result, err := op.String()
+		if err != nil {
+			return "", err
+		}
+		arr = append(arr, result)
+	}
+	return strings.Join(arr, "\n"), nil
 }
