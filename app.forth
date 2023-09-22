@@ -1,1 +1,6 @@
-start: 100 4 / print
+0
+start:
+	1 + dup
+	print
+	1 wait
+start!

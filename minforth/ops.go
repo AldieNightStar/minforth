@@ -62,6 +62,9 @@ const (
 
 	// Args: label_name
 	OP_SPEC_DEF_LABEL
+
+	// Args: label_name
+	OP_SPEC_JUMP
 )
 
 type operation struct {
@@ -127,7 +130,7 @@ func (o *operation) String() (string, error) {
 	} else if o.Type == OP_JUMP {
 		// o.Args: pos
 		if o.HasAllArgs(1) {
-			return fmt.Sprintf("jump %d always ___ 0", o.Args[0]), nil
+			return fmt.Sprintf("jump %s always ___ 0", o.Args[0]), nil
 		} else {
 			return "", notEnoughArgs("jump", 1)
 		}

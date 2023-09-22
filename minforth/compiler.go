@@ -8,11 +8,17 @@ func addOperation(typ int, code *Code, stackCell string) {
 }
 
 func Compile(stackCell string, messageCell string, src string) (string, error) {
+	var err error
+	var newops []*operation
+
 	tokens := lex(src)
 	code := newCode(stackCell, messageCell)
 	for _, tok := range tokens {
+		jumpLabel := lexJumpingToken(tok)
 		labelName := lexLabel(tok)
-		if labelName != "" {
+		if jumpLabel != "" {
+			code.Add(newOperation(OP_SPEC_JUMP, jumpLabel))
+		} else if labelName != "" {
 			code.Add(newOperation(OP_SPEC_DEF_LABEL, labelName))
 		} else if tok == "+" {
 			addOperation(OP_ADD, code, stackCell)
@@ -41,5 +47,12 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 		}
 	}
 	optimize(code)
+	labels := takeLabels(code)
+	newops, err = processJumps(code, labels)
+	if err != nil {
+		return "", err
+	}
+	code.Operations = newops
+
 	return code.String()
 }

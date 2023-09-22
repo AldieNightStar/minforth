@@ -38,3 +38,13 @@ func lexLabel(tok string) string {
 	}
 	return ""
 }
+
+func lexJumpingToken(tok string) string {
+	if len(tok) < 2 {
+		return ""
+	}
+	if strings.HasSuffix(tok, "!") {
+		return tok[0 : len(tok)-1]
+	}
+	return ""
+}
