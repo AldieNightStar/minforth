@@ -28,6 +28,8 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 			code.Add(newOperation(OP_WAIT, "VAL1"))
 		} else if tok == "dup" {
 			code.Add(newOperation(OP_SPEC_DUPE, stackCell))
+		} else if tok == "drop" {
+			code.Add(newOperation(OP_SPEC_DROP, stackCell))
 		} else {
 			_, isNum := lexNumber(tok)
 			if isNum {
