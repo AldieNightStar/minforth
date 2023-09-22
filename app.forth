@@ -1,1 +1,1 @@
-123 dup dup + + print
+50 dup dup + + print

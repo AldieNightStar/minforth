@@ -1,8 +1,8 @@
 package minforth
 
 func optimize(code *Code) {
-	// code.Operations = optimizePushPop(code)
-	// code.Operations = optimizeSetRead(code)
+	code.Operations = optimizePushPop(code)
+	code.Operations = optimizeSetRead(code)
 }
 
 func optimizePushPop(code *Code) []*operation {

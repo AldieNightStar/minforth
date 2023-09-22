@@ -53,6 +53,9 @@ const (
 
 	// Args: result cell_name
 	OP_SPEC_POP
+
+	// Args: cell_name
+	OP_SPEC_DUPE
 )
 
 type operation struct {
@@ -141,6 +144,16 @@ func (o *operation) String() (string, error) {
 			)
 		} else {
 			return "", notEnoughArgs("pop", 2)
+		}
+	} else if o.Type == OP_SPEC_DUPE {
+		if o.HasAllArgs(1) {
+			return o.combine(
+				newOperation(OP_SPEC_POP, "VAL1", o.Args[0]),
+				newOperation(OP_SPEC_PUSH, "VAL1", o.Args[0]),
+				newOperation(OP_SPEC_PUSH, "VAL1", o.Args[0]),
+			)
+		} else {
+			return "", notEnoughArgs("dupe", 1)
 		}
 	}
 	return "", errors.New("Unknown operation")
