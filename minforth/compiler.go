@@ -19,7 +19,7 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 		jumpLabel := lexJumpingToken(tok)
 		labelName := lexLabel(tok)
 		if varGetName != "" {
-			code.Add(newOperation(OP_SPEC_GET_VAR, varSetName, stackCell))
+			code.Add(newOperation(OP_SPEC_GET_VAR, varGetName, stackCell))
 		} else if varSetName != "" {
 			code.Add(newOperation(OP_SPEC_SET_VAR, varSetName, stackCell))
 		} else if jumpLabel != "" {
