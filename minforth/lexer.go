@@ -28,3 +28,13 @@ func lexNumber(tok string) (n int64, ok bool) {
 	}
 	return n, true
 }
+
+func lexLabel(tok string) string {
+	if len(tok) < 2 {
+		return ""
+	}
+	if strings.HasSuffix(tok, ":") {
+		return tok[0 : len(tok)-1]
+	}
+	return ""
+}

@@ -11,7 +11,10 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 	tokens := lex(src)
 	code := newCode(stackCell, messageCell)
 	for _, tok := range tokens {
-		if tok == "+" {
+		labelName := lexLabel(tok)
+		if labelName != "" {
+			code.Add(newOperation(OP_SPEC_DEF_LABEL, labelName))
+		} else if tok == "+" {
 			addOperation(OP_ADD, code, stackCell)
 		} else if tok == "-" {
 			addOperation(OP_SUB, code, stackCell)

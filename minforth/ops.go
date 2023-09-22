@@ -59,6 +59,9 @@ const (
 
 	// Args: cell_name
 	OP_SPEC_DROP
+
+	// Args: label_name
+	OP_SPEC_DEF_LABEL
 )
 
 type operation struct {
@@ -166,6 +169,9 @@ func (o *operation) String() (string, error) {
 		} else {
 			return "", notEnoughArgs("drop", 1)
 		}
+	} else if o.Type == OP_SPEC_DEF_LABEL {
+		// Return empty render. It does nothing
+		return "noop", nil
 	}
 	return "", errors.New("Unknown operation")
 }
