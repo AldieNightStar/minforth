@@ -33,5 +33,6 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 			}
 		}
 	}
+	optimize(code)
 	return code.String()
 }
