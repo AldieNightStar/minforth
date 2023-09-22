@@ -65,6 +65,12 @@ const (
 
 	// Args: label_name
 	OP_SPEC_JUMP
+
+	// Args: var_name cell_name
+	OP_SPEC_SET_VAR
+
+	// Args: var_name cell_name
+	OP_SPEC_GET_VAR
 )
 
 type operation struct {
@@ -175,6 +181,22 @@ func (o *operation) String() (string, error) {
 	} else if o.Type == OP_SPEC_DEF_LABEL {
 		// Return empty render. It does nothing
 		return "noop", nil
+	} else if o.Type == OP_SPEC_SET_VAR {
+		if o.HasAllArgs(2) {
+			return o.combine(
+				newOperation(OP_SPEC_POP, o.Args[0], o.Args[1]),
+			)
+		} else {
+			return "", notEnoughArgs("set var", 1)
+		}
+	} else if o.Type == OP_SPEC_GET_VAR {
+		if o.HasAllArgs(2) {
+			return o.combine(
+				newOperation(OP_SPEC_PUSH, o.Args[0], o.Args[1]),
+			)
+		} else {
+			return "", notEnoughArgs("get var", 1)
+		}
 	}
 	return "", errors.New("Unknown operation")
 }

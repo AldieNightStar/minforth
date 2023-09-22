@@ -14,9 +14,15 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 	tokens := lex(src)
 	code := newCode(stackCell, messageCell)
 	for _, tok := range tokens {
+		varGetName := lexVariableGetter(tok)
+		varSetName := lexVariableSetter(tok)
 		jumpLabel := lexJumpingToken(tok)
 		labelName := lexLabel(tok)
-		if jumpLabel != "" {
+		if varGetName != "" {
+			code.Add(newOperation(OP_SPEC_GET_VAR, varSetName, stackCell))
+		} else if varSetName != "" {
+			code.Add(newOperation(OP_SPEC_SET_VAR, varSetName, stackCell))
+		} else if jumpLabel != "" {
 			code.Add(newOperation(OP_SPEC_JUMP, jumpLabel))
 		} else if labelName != "" {
 			code.Add(newOperation(OP_SPEC_DEF_LABEL, labelName))

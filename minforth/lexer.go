@@ -48,3 +48,23 @@ func lexJumpingToken(tok string) string {
 	}
 	return ""
 }
+
+func lexVariableGetter(tok string) string {
+	if len(tok) < 2 {
+		return ""
+	}
+	if strings.HasPrefix(tok, "$") && !strings.HasPrefix(tok, "$$") {
+		return tok[1:]
+	}
+	return ""
+}
+
+func lexVariableSetter(tok string) string {
+	if len(tok) < 2 {
+		return ""
+	}
+	if strings.HasPrefix(tok, "=") {
+		return tok[1:]
+	}
+	return ""
+}
