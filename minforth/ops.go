@@ -10,77 +10,82 @@ func notEnoughArgs(opname string, n int) error {
 	return errors.New(fmt.Sprintf("Not enough args [%s]: %d", opname, n))
 }
 
-const (
+type operationType struct {
+	// How many instructions used per this opertaion
+	Steps int
+}
+
+var (
 	// Args: message
-	OP_PRINT = iota
+	OP_PRINT = &operationType{1}
 
 	// Args: cell_name
-	OP_PRINT_FLUSH
+	OP_PRINT_FLUSH = &operationType{1}
 
 	// Args: name value
-	OP_SET
+	OP_SET = &operationType{1}
 
 	// Args: result a b
-	OP_ADD
+	OP_ADD = &operationType{1}
 
 	// Args: result a b
-	OP_SUB
+	OP_SUB = &operationType{1}
 
 	// Args: result a b
-	OP_MUL
+	OP_MUL = &operationType{1}
 
 	// Args: result a b
-	OP_DIV
+	OP_DIV = &operationType{1}
 
 	// Args: result cell_name at
-	OP_CELL_READ
+	OP_CELL_READ = &operationType{1}
 
 	// Args: value cell_name at
-	OP_CELL_WRITE
+	OP_CELL_WRITE = &operationType{1}
 
 	// Args: seconds
-	OP_WAIT
+	OP_WAIT = &operationType{1}
 
 	// Args: pos
-	OP_JUMP
+	OP_JUMP = &operationType{1}
 
 	// =====================
 	// Special Operations
 	// =====================
 
 	// Args: value cell_name
-	OP_SPEC_PUSH
+	OP_SPEC_PUSH = &operationType{2}
 
 	// Args: result cell_name
-	OP_SPEC_POP
+	OP_SPEC_POP = &operationType{2}
 
 	// Args: cell_name
-	OP_SPEC_DUPE
+	OP_SPEC_DUPE = &operationType{3}
 
 	// Args: cell_name
-	OP_SPEC_DROP
+	OP_SPEC_DROP = &operationType{1}
 
 	// Args: label_name
-	OP_SPEC_DEF_LABEL
+	OP_SPEC_DEF_LABEL = &operationType{1}
 
 	// Args: label_name
-	OP_SPEC_JUMP
+	OP_SPEC_JUMP = &operationType{1}
 
 	// Args: var_name cell_name
-	OP_SPEC_SET_VAR
+	OP_SPEC_SET_VAR = &operationType{1}
 
 	// Args: var_name cell_name
-	OP_SPEC_GET_VAR
+	OP_SPEC_GET_VAR = &operationType{1}
 )
 
 type operation struct {
-	Type int
+	Type *operationType
 	Args []string
 }
 
-func newOperation(typ int, args ...string) *operation {
+func newOperation(t *operationType, args ...string) *operation {
 	return &operation{
-		Type: typ,
+		Type: t,
 		Args: args,
 	}
 }

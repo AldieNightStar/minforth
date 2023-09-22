@@ -1,6 +1,6 @@
 package minforth
 
-func addOperation(typ int, code *Code, stackCell string) {
+func addOperation(typ *operationType, code *Code, stackCell string) {
 	code.Add(newOperation(OP_SPEC_POP, "VAL1", stackCell))
 	code.Add(newOperation(OP_SPEC_POP, "VAL2", stackCell))
 	code.Add(newOperation(typ, "VAL1", "VAL2", "VAL1"))
