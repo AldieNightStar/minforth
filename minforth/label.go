@@ -49,7 +49,7 @@ func processLogicLabels(code *Code, labels map[string]int) ([]*operation, error)
 			skips -= 1
 			continue
 		}
-		if isLogicSpecialType(op.Type) && op.Args[0] == "??" {
+		if op.Type == OP_JUMP_COND && op.Args[0] == "??" {
 			next := getAt(code.Operations, id+1, nil)
 			if next == nil {
 				return nil, errors.New("After logic operator there are nothing")
@@ -58,7 +58,7 @@ func processLogicLabels(code *Code, labels map[string]int) ([]*operation, error)
 				return nil, errors.New("After logic operator there should be jump label")
 			}
 			jumpPos := next.Args[0]
-			newops = append(newops, newOperation(op.Type, jumpPos, code.StackCell))
+			newops = append(newops, newOperation(OP_JUMP_COND, jumpPos, op.Args[1], op.Args[2], op.Args[3]))
 			newops = append(newops, newOperation(OP_NONE))
 
 			// Skip next token

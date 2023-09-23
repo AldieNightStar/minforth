@@ -1,3 +1,3 @@
 start:
 	1 print
-	start!
+	1 1 = start!
