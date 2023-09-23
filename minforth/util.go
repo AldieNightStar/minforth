@@ -18,12 +18,3 @@ func takeNumber(arr []string, id int) (int, bool) {
 	}
 	return int(n), true
 }
-
-func take2Numbers(arr []string, id1, id2 int) (int, int, bool) {
-	a, aok := takeNumber(arr, id1)
-	b, bok := takeNumber(arr, id2)
-	if !aok || !bok {
-		return 0, 0, false
-	}
-	return a, b, true
-}

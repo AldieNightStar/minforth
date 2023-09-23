@@ -1,10 +1,9 @@
-10 =a
-20 =b
-$a =c
-1 wait
+0 =i
 
-lp:
-	1000 =SAFE_POINT
-	$a 1 + =a
-	1 wait
-lp!
+start:
+	$i 1 + =i
+	$i 100 > end!
+	start!
+
+1 wait
+end:

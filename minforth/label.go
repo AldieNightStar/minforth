@@ -26,6 +26,8 @@ func takeLabels(code *Code) (labs map[string]int) {
 			shift += op.Type.Steps
 			continue
 		}
+		// Increase instruction
+		// So we will know which is this instruction
 		instruction += op.Type.Steps
 		newops = append(newops, op)
 	}
@@ -48,4 +50,43 @@ func processJumps(code *Code, labels map[string]int) ([]*operation, error) {
 		}
 	}
 	return newops, nil
+}
+
+func processLogicLabels(code *Code, labels map[string]int) ([]*operation, error) {
+	newops := []*operation{}
+	skips := 0
+	for id, op := range code.Operations {
+		// Skipping if needed
+		if skips > 0 {
+			skips -= 1
+			continue
+		}
+		if isLogicSpecialType(op.Type) && op.Args[0] == "??" {
+			next := getAt(code.Operations, id+1, nil)
+			if next == nil {
+				return nil, errors.New("After logic operator there are nothing")
+			}
+			if next.Type != OP_JUMP {
+				return nil, errors.New("After logic operator there should be jump label")
+			}
+			jumpPos := next.Args[0]
+			newops = append(newops, newOperation(op.Type, jumpPos, code.StackCell))
+			newops = append(newops, newOperation(OP_NONE))
+
+			// Skip next token
+			skips = 1
+		} else {
+			newops = append(newops, op)
+		}
+	}
+	return newops, nil
+}
+
+func isLogicSpecialType(t *operationType) bool {
+	return t == OP_SPEC_LT ||
+		t == OP_SPEC_GT ||
+		t == OP_SPEC_EQ ||
+		t == OP_SPEC_GTE ||
+		t == OP_SPEC_LTE ||
+		t == OP_SPEC_NEQ
 }

@@ -31,5 +31,5 @@ func (c *Code) String() (string, error) {
 		}
 		arr = append(arr, result)
 	}
-	return strings.Join(arr, "\n"), nil
+	return strings.Join(arr, "\n") + "\nend", nil
 }

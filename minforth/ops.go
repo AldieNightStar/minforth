@@ -76,6 +76,27 @@ var (
 
 	// Args: var_name cell_name
 	OP_SPEC_GET_VAR = &operationType{2}
+
+	// Args: jump_pos cell_name
+	OP_SPEC_LT = &operationType{5}
+
+	// Args: jump_pos cell_name
+	OP_SPEC_GT = &operationType{5}
+
+	// Args: jump_pos cell_name
+	OP_SPEC_EQ = &operationType{5}
+
+	// Args: jump_pos cell_name
+	OP_SPEC_NEQ = &operationType{5}
+
+	// Args: jump_pos cell_name
+	OP_SPEC_GTE = &operationType{5}
+
+	// Args: jump_pos cell_name
+	OP_SPEC_LTE = &operationType{5}
+
+	// Args: 0
+	OP_NONE = &operationType{0}
 )
 
 type operation struct {
@@ -101,6 +122,22 @@ func (o *operation) simpleOperation(name string, argcount int) (string, error) {
 		return fmt.Sprintf("%s %s", name, o.joinedArgs()), nil
 	} else {
 		return "", notEnoughArgs(name, argcount)
+	}
+}
+
+func (o *operation) logicJump(condition string) (string, error) {
+	if o.HasAllArgs(2) {
+		// Here are we are combining stack pops and jump logic to special position if conditions are met
+		result, err := o.combine(
+			newOperation(OP_SPEC_POP, "VAL2", o.Args[1]),
+			newOperation(OP_SPEC_POP, "VAL1", o.Args[1]),
+		)
+		if err != nil {
+			return "", err
+		}
+		return result + "\n" + fmt.Sprintf("jump %s %s VAL1 VAL2", o.Args[0], condition), nil
+	} else {
+		return "", notEnoughArgs("jump if "+condition, 2)
 	}
 }
 
@@ -202,6 +239,20 @@ func (o *operation) String() (string, error) {
 		} else {
 			return "", notEnoughArgs("get var", 1)
 		}
+	} else if o.Type == OP_SPEC_LT {
+		return o.logicJump("lessThan")
+	} else if o.Type == OP_SPEC_EQ {
+		return o.logicJump("equal")
+	} else if o.Type == OP_SPEC_GT {
+		return o.logicJump("greaterThan")
+	} else if o.Type == OP_SPEC_LTE {
+		return o.logicJump("lessThanEq")
+	} else if o.Type == OP_SPEC_GTE {
+		return o.logicJump("greaterThanEq")
+	} else if o.Type == OP_SPEC_NEQ {
+		return o.logicJump("notEqual")
+	} else if o.Type == OP_NONE {
+		return "noop", nil
 	}
 	return "", errors.New("Unknown operation")
 }

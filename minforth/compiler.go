@@ -13,7 +13,16 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 
 	tokens := lex(src)
 	code := newCode(stackCell, messageCell)
+
+	// Skipping feature
+	skips := 0
 	for _, tok := range tokens {
+		// If need to skip something
+		if skips > 0 {
+			skips -= 1
+			continue
+		}
+
 		varGetName := lexVariableGetter(tok)
 		varSetName := lexVariableSetter(tok)
 		jumpLabel := lexJumpingToken(tok)
@@ -45,6 +54,18 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 			code.Add(newOperation(OP_SPEC_DUPE, stackCell))
 		} else if tok == "drop" {
 			code.Add(newOperation(OP_SPEC_DROP, stackCell))
+		} else if tok == "<" {
+			code.Add(newOperation(OP_SPEC_LT, "??", stackCell))
+		} else if tok == "=" {
+			code.Add(newOperation(OP_SPEC_EQ, "??", stackCell))
+		} else if tok == ">" {
+			code.Add(newOperation(OP_SPEC_GT, "??", stackCell))
+		} else if tok == "<=" {
+			code.Add(newOperation(OP_SPEC_LTE, "??", stackCell))
+		} else if tok == ">=" {
+			code.Add(newOperation(OP_SPEC_GTE, "??", stackCell))
+		} else if tok == "!=" {
+			code.Add(newOperation(OP_SPEC_NEQ, "??", stackCell))
 		} else {
 			_, isNum := lexNumber(tok)
 			if isNum {
@@ -55,6 +76,11 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 	optimize(code)
 	labels := takeLabels(code)
 	newops, err = processJumps(code, labels)
+	if err != nil {
+		return "", err
+	}
+	code.Operations = newops
+	newops, err = processLogicLabels(code, labels)
 	if err != nil {
 		return "", err
 	}
