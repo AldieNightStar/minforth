@@ -78,6 +78,8 @@ func (o *operation) String() (string, error) {
 		return "noop", nil
 	} else if o.Type == OP_CONTROL {
 		return o.simpleOperation("control", 3)
+	} else if o.Type == OP_SENSOR {
+		return o.simpleOperation("sensor", 3)
 	}
 	return "", errors.New("Unknown operation")
 }

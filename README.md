@@ -2,6 +2,14 @@
 ## Mindustry Forth-like language
 
 
+## In-game setup
+* Place logic processor
+* Add `message cell`
+* Add `memory cell`
+* Link them together
+* Remember link names like: `cell1` and `message1`
+    * They will be used to compile the program
+
 ## Features
 * Works with stacks on top of `memoryCell`
 * Labels and jumps
@@ -19,3 +27,4 @@
 * Control and sensors:
     * [Print](doc/Print.md)
     * [Control](doc/Control.md)
+    * [Sensor](doc/Sensor.md)

@@ -111,12 +111,22 @@ func processTokens(code *Code, tokens []string) error {
 			paramName := getAtMap(code.Constants, "p", "")
 			blockName := getAtMap(code.Constants, "b", "")
 			if paramName == "" {
-				return noConstant("p")
+				return noConstant("p", "parameter")
 			} else if blockName == "" {
-				return noConstant("b")
+				return noConstant("b", "block")
 			}
 			code.Add(newOperation(OP_SPEC_POP, "VAL1", code.StackCell))
 			code.Add(newOperation(OP_CONTROL, paramName, blockName, "VAL1"))
+		} else if tok == "sensor" {
+			paramName := getAtMap(code.Constants, "p", "")
+			blockName := getAtMap(code.Constants, "b", "")
+			if paramName == "" {
+				return noConstant("p", "parameter")
+			} else if blockName == "" {
+				return noConstant("b", "block")
+			}
+			code.Add(newOperation(OP_SENSOR, "VAL1", blockName, paramName))
+			code.Add(newOperation(OP_SPEC_PUSH, "VAL1", code.MessageCell))
 		} else {
 			_, isNum := lexNumber(tok)
 			if isNum {

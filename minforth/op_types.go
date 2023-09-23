@@ -47,6 +47,9 @@ const (
 	// Args: param_name block_name value
 	OP_CONTROL
 
+	// Args: result block_name parameter
+	OP_SENSOR
+
 	// =====================
 	// Special Operations
 	// =====================
