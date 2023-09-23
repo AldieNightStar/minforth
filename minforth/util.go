@@ -18,3 +18,11 @@ func takeNumber(arr []string, id int) (int, bool) {
 	}
 	return int(n), true
 }
+
+func getAtMap[T any](m map[string]T, k string, defval T) T {
+	v, ok := m[k]
+	if !ok {
+		return defval
+	}
+	return v
+}

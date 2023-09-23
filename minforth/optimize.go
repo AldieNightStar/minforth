@@ -65,7 +65,9 @@ func optimizeSetRead(code *Code) []*operation {
 
 func isUsingValue(op *operation, value string) bool {
 	for _, arg := range op.Args {
-		return arg == value
+		if arg == value {
+			return true
+		}
 	}
 	return false
 }

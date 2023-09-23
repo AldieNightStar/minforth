@@ -6,6 +6,7 @@ type Code struct {
 	StackCell   string
 	MessageCell string
 	Operations  []*operation
+	Constants   map[string]string
 }
 
 func newCode(stackCell, messageCell string) *Code {
@@ -13,6 +14,7 @@ func newCode(stackCell, messageCell string) *Code {
 		StackCell:   stackCell,
 		MessageCell: messageCell,
 		Operations:  make([]*operation, 0, 8),
+		Constants:   make(map[string]string),
 	}
 	code.Add(newOperation(OP_SET, "SP", "0"))
 	return code

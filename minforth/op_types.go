@@ -44,6 +44,9 @@ const (
 	//   * notEqual
 	OP_JUMP_COND
 
+	// Args: param_name block_name value
+	OP_CONTROL
+
 	// =====================
 	// Special Operations
 	// =====================

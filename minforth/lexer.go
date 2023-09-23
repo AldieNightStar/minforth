@@ -68,3 +68,21 @@ func lexVariableSetter(tok string) string {
 	}
 	return ""
 }
+
+// token:   :b=block1
+func lexConstantSetter(tok string) (k, v string) {
+	if len(tok) < 2 {
+		return "", ""
+	}
+	if !strings.HasPrefix(tok, ":") {
+		return "", ""
+	}
+	if !strings.Contains(tok, "=") {
+		return "", ""
+	}
+	arr := strings.SplitN(tok, "=", 2)
+	if len(arr) != 2 {
+		return "", ""
+	}
+	return arr[0][1:], arr[1]
+}

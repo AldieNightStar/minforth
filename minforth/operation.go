@@ -76,6 +76,8 @@ func (o *operation) String() (string, error) {
 		return o.simpleOperation("jump", 4)
 	} else if o.Type == OP_NONE {
 		return "noop", nil
+	} else if o.Type == OP_CONTROL {
+		return o.simpleOperation("control", 3)
 	}
 	return "", errors.New("Unknown operation")
 }

@@ -14,7 +14,10 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 	// Process tokens and enrich the *Code
 	tokens := lex(src)
 	code := newCode(stackCell, messageCell)
-	processTokens(code, tokens)
+	err = processTokens(code, tokens)
+	if err != nil {
+		return "", err
+	}
 
 	// Optimize all push/pop operations
 	code.Operations = optimizePushPop(code)
@@ -48,7 +51,7 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 	return code.String()
 }
 
-func processTokens(code *Code, tokens []string) {
+func processTokens(code *Code, tokens []string) error {
 	skips := 0
 	for _, tok := range tokens {
 		// If need to skip something
@@ -61,7 +64,11 @@ func processTokens(code *Code, tokens []string) {
 		varSetName := lexVariableSetter(tok)
 		jumpLabel := lexJumpingToken(tok)
 		labelName := lexLabel(tok)
-		if varGetName != "" {
+		constKey, constVal := lexConstantSetter(tok)
+
+		if constKey != "" && constVal != "" {
+			code.Constants[constKey] = constVal
+		} else if varGetName != "" {
 			code.Add(newOperation(OP_SPEC_GET_VAR, varGetName, code.StackCell))
 		} else if varSetName != "" {
 			code.Add(newOperation(OP_SPEC_SET_VAR, varSetName, code.StackCell))
@@ -100,6 +107,16 @@ func processTokens(code *Code, tokens []string) {
 			code.Add(newOperation(OP_SPEC_GTE, "??", code.StackCell))
 		} else if tok == "!=" {
 			code.Add(newOperation(OP_SPEC_NEQ, "??", code.StackCell))
+		} else if tok == "control" {
+			paramName := getAtMap(code.Constants, "p", "")
+			blockName := getAtMap(code.Constants, "b", "")
+			if paramName == "" {
+				return noConstant("p")
+			} else if blockName == "" {
+				return noConstant("b")
+			}
+			code.Add(newOperation(OP_SPEC_POP, "VAL1", code.StackCell))
+			code.Add(newOperation(OP_CONTROL, paramName, blockName, "VAL1"))
 		} else {
 			_, isNum := lexNumber(tok)
 			if isNum {
@@ -107,4 +124,5 @@ func processTokens(code *Code, tokens []string) {
 			}
 		}
 	}
+	return nil
 }
