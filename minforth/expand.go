@@ -93,12 +93,12 @@ func (o *operation) expand() (mewops []*operation, reexpand bool, err error) {
 func expandAll(ops []*operation) (newops []*operation, reexpand bool, err error) {
 	// Reusable
 	var expandedOps []*operation
-	var doReexpand = false
+	var _reexpand = false
 
 	for _, op := range ops {
-		expandedOps, doReexpand, err = op.expand()
+		expandedOps, _reexpand, err = op.expand()
 		// Once reexpand is true then it's true until end
-		if doReexpand {
+		if _reexpand {
 			reexpand = true
 		}
 		if err != nil {
