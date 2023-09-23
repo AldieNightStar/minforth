@@ -3,6 +3,11 @@ package minforth
 func optimize(code *Code) {
 	code.Operations = optimizePushPop(code)
 	code.Operations = optimizeSetRead(code)
+	code.Operations = optimizeAddSubSpOps(code)
+	code.Operations = optimizeWriteReadSp(code)
+
+	// Re-optimization
+	code.Operations = optimizeSetRead(code)
 }
 
 func optimizePushPop(code *Code) []*operation {
@@ -56,6 +61,58 @@ func optimizeSetRead(code *Code) []*operation {
 			}
 		}
 		newops = append(newops, op)
+	}
+	return newops
+}
+
+func optimizeAddSubSpOps(code *Code) []*operation {
+	newops := []*operation{}
+	skips := 0
+	for id, op := range code.Operations {
+		if skips > 0 {
+			skips -= 1
+			continue
+		}
+		if op.Type == OP_ADD && op.Args[0] == "SP" && op.Args[1] == "SP" {
+			next := getAt(code.Operations, id+1, nil)
+			if next != nil {
+				if next.Type == OP_SUB && op.Args[0] == "SP" && op.Args[1] == "SP" {
+					// Do not add anything. Just continue
+					// And skip next element also
+					skips = 1
+					continue
+				}
+			}
+		} else {
+			newops = append(newops, op)
+		}
+	}
+	return newops
+}
+
+func optimizeWriteReadSp(code *Code) []*operation {
+	newops := []*operation{}
+	skips := 0
+	for id, op := range code.Operations {
+		if skips > 0 {
+			skips -= 1
+			continue
+		}
+		if op.Type == OP_CELL_WRITE && op.Args[2] == "SP" {
+			next := getAt(code.Operations, id+1, nil)
+			if next != nil {
+				if next.Type == OP_CELL_READ && op.Args[2] == "SP" {
+					// just replace to set VAL1
+					dataToWrite := op.Args[0]
+					newops = append(newops, newOperation(OP_SET, "VAL1", dataToWrite))
+					// And then skip next element
+					skips = 1
+					continue
+				}
+			}
+		} else {
+			newops = append(newops, op)
+		}
 	}
 	return newops
 }

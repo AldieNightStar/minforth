@@ -74,6 +74,16 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 		}
 	}
 
+	// Expand all the code
+	newops, err = expandAllWithReexpand(code.Operations)
+	if err != nil {
+		return "", err
+	}
+	code.Operations = newops
+
+	// Optimize the code at the end
+	optimize(code)
+
 	// Process labels and jumps
 	labels := takeLabels(code)
 	newops, err = processJumps(code, labels)
@@ -84,13 +94,6 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 
 	// Process Logic labels: < > = <= >=
 	newops, err = processLogicLabels(code, labels)
-	if err != nil {
-		return "", err
-	}
-	code.Operations = newops
-
-	// Expand all the code
-	newops, err = expandAllWithReexpand(code.Operations)
 	if err != nil {
 		return "", err
 	}
