@@ -1,7 +1,5 @@
 package minforth
 
-import "fmt"
-
 func (o *operation) logicJump(condition string) (newops []*operation, reexpand bool, err error) {
 	if o.HasAllArgs(2) {
 		// Here are we are combining stack pops and jump logic to special position if conditions are met
@@ -120,7 +118,6 @@ func expandAllWithReexpand(ops []*operation) (newops []*operation, err error) {
 		if err != nil {
 			return nil, err
 		}
-		fmt.Println("EXPAND")
 	}
 	return newops, nil
 }
