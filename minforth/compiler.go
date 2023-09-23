@@ -82,7 +82,8 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 	code.Operations = newops
 
 	// Optimize the code at the end
-	optimize(code)
+	// We use three time optimization
+	optimize(code, 3)
 
 	// Process labels and jumps
 	labels := takeLabels(code)

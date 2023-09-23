@@ -1,13 +1,12 @@
 package minforth
 
-func optimize(code *Code) {
-	code.Operations = optimizePushPop(code)
-	code.Operations = optimizeSetRead(code)
-	code.Operations = optimizeAddSubSpOps(code)
-	code.Operations = optimizeWriteReadSp(code)
-
-	// Re-optimization
-	code.Operations = optimizeSetRead(code)
+func optimize(code *Code, times int) {
+	for i := 0; i < times; i++ {
+		code.Operations = optimizePushPop(code)
+		code.Operations = optimizeSetRead(code)
+		code.Operations = optimizeAddSubSpOps(code)
+		code.Operations = optimizeWriteReadSp(code)
+	}
 }
 
 func optimizePushPop(code *Code) []*operation {
