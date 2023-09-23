@@ -49,6 +49,16 @@ var (
 	// Args: pos
 	OP_JUMP = &operationType{1}
 
+	// Args: pos condition a b.
+	//   Conditions:
+	//   * lessThan
+	//   * lessThanEq
+	//   * equal
+	//   * greaterThanEq
+	//   * greaterThan
+	//   * notEqual
+	OP_JUMP_COND = &operationType{1}
+
 	// =====================
 	// Special Operations
 	// =====================
@@ -178,10 +188,12 @@ func (o *operation) String() (string, error) {
 	} else if o.Type == OP_JUMP {
 		// o.Args: pos
 		if o.HasAllArgs(1) {
-			return fmt.Sprintf("jump %s always ___ 0", o.Args[0]), nil
+			return fmt.Sprintf("jump %s always", o.Args[0]), nil
 		} else {
 			return "", notEnoughArgs("jump", 1)
 		}
+	} else if o.Type == OP_JUMP_COND {
+		return o.simpleOperation("jump", 4)
 	} else if o.Type == OP_SPEC_PUSH {
 		// o.Args: value cell_name
 		if o.HasAllArgs(2) {
