@@ -1,6 +1,6 @@
 package minforth
 
-func addOperation(typ *operationType, code *Code, stackCell string) {
+func addOperation(typ uint8, code *Code, stackCell string) {
 	code.Add(newOperation(OP_SPEC_POP, "VAL1", stackCell))
 	code.Add(newOperation(OP_SPEC_POP, "VAL2", stackCell))
 	code.Add(newOperation(typ, "VAL1", "VAL2", "VAL1"))
@@ -73,14 +73,24 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 			}
 		}
 	}
-	optimize(code)
+
+	// Process labels and jumps
 	labels := takeLabels(code)
 	newops, err = processJumps(code, labels)
 	if err != nil {
 		return "", err
 	}
 	code.Operations = newops
+
+	// Process Logic labels: < > = <= >=
 	newops, err = processLogicLabels(code, labels)
+	if err != nil {
+		return "", err
+	}
+	code.Operations = newops
+
+	// Expand all the code
+	newops, err = expandAllWithReexpand(code.Operations)
 	if err != nil {
 		return "", err
 	}

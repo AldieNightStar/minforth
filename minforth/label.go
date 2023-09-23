@@ -10,20 +10,13 @@ func takeLabels(code *Code) (labs map[string]int) {
 	labs = make(map[string]int)
 	newops := []*operation{}
 
-	// Each special instruction has its own instruction set
-	// For example stack operations is 2 instructions
-	// Need to remember that to make precise labels work
-	var instruction = 0
-
-	// Loop
+	var steps = 0
 	for _, op := range code.Operations {
 		if op.Type == OP_SPEC_DEF_LABEL {
-			labs[op.Args[0]] = instruction
+			labs[op.Args[0]] = steps
 			continue
 		}
-		// Increase instruction
-		// So we will know which is this instruction
-		instruction += op.Type.Steps
+		steps += 1
 		newops = append(newops, op)
 	}
 	code.Operations = newops
@@ -77,7 +70,7 @@ func processLogicLabels(code *Code, labels map[string]int) ([]*operation, error)
 	return newops, nil
 }
 
-func isLogicSpecialType(t *operationType) bool {
+func isLogicSpecialType(t uint8) bool {
 	return t == OP_SPEC_LT ||
 		t == OP_SPEC_GT ||
 		t == OP_SPEC_EQ ||
