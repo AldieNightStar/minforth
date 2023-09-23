@@ -2,13 +2,12 @@ package minforth
 
 func optimize(code *Code, times int) {
 	for i := 0; i < times; i++ {
-		code.Operations = optimizePushPop(code)
 		code.Operations = optimizeSetRead(code)
-		code.Operations = optimizeAddSubSpOps(code)
-		code.Operations = optimizeWriteReadSp(code)
 	}
 }
 
+// This code is working out of 'optimize' method
+// Before expand was made
 func optimizePushPop(code *Code) []*operation {
 	newops := []*operation{}
 	skips := 0
@@ -48,11 +47,11 @@ func optimizeSetRead(code *Code) []*operation {
 
 		// If current operation is setting VAL1 and second using it
 		// Then make next one use that value directly
-		if op.Type == OP_SET && isOpUsingVal(op) {
+		if op.Type == OP_SET && op.Args[0] == "VAL1" {
 			next := getAt(code.Operations, id+1, nil)
 			if next != nil {
-				if isOpUsingVal(next) {
-					next = opReplaceVal(next, op.Args[1])
+				if isUsingValue(next, "VAL1") {
+					next = opReplaceVal(next, "VAL1", op.Args[1])
 					newops = append(newops, next)
 					skips = 1 // Skip one more
 					continue
@@ -64,68 +63,16 @@ func optimizeSetRead(code *Code) []*operation {
 	return newops
 }
 
-func optimizeAddSubSpOps(code *Code) []*operation {
-	newops := []*operation{}
-	skips := 0
-	for id, op := range code.Operations {
-		if skips > 0 {
-			skips -= 1
-			continue
-		}
-		if op.Type == OP_ADD && op.Args[0] == "SP" && op.Args[1] == "SP" {
-			next := getAt(code.Operations, id+1, nil)
-			if next != nil {
-				if next.Type == OP_SUB && op.Args[0] == "SP" && op.Args[1] == "SP" {
-					// Do not add anything. Just continue
-					// And skip next element also
-					skips = 1
-					continue
-				}
-			}
-		} else {
-			newops = append(newops, op)
-		}
-	}
-	return newops
-}
-
-func optimizeWriteReadSp(code *Code) []*operation {
-	newops := []*operation{}
-	skips := 0
-	for id, op := range code.Operations {
-		if skips > 0 {
-			skips -= 1
-			continue
-		}
-		if op.Type == OP_CELL_WRITE && op.Args[2] == "SP" {
-			next := getAt(code.Operations, id+1, nil)
-			if next != nil {
-				if next.Type == OP_CELL_READ && op.Args[2] == "SP" {
-					// just replace to set VAL1
-					dataToWrite := op.Args[0]
-					newops = append(newops, newOperation(OP_SET, "VAL1", dataToWrite))
-					// And then skip next element
-					skips = 1
-					continue
-				}
-			}
-		} else {
-			newops = append(newops, op)
-		}
-	}
-	return newops
-}
-
-func isOpUsingVal(op *operation) bool {
+func isUsingValue(op *operation, value string) bool {
 	for _, arg := range op.Args {
-		return arg == "VAL1" || arg == "val1"
+		return arg == value
 	}
 	return false
 }
 
-func opReplaceVal(op *operation, value string) *operation {
+func opReplaceVal(op *operation, oldValue string, value string) *operation {
 	for id, arg := range op.Args {
-		if arg == "VAL1" || arg == "val1" {
+		if arg == oldValue {
 			op.Args[id] = value
 		}
 	}

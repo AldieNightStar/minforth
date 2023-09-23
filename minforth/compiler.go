@@ -16,6 +16,9 @@ func Compile(stackCell string, messageCell string, src string) (string, error) {
 	code := newCode(stackCell, messageCell)
 	processTokens(code, tokens)
 
+	// Optimize all push/pop operations
+	code.Operations = optimizePushPop(code)
+
 	// Expand all the code
 	newops, err = expandAllWithReexpand(code.Operations)
 	if err != nil {
