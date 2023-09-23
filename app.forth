@@ -1,9 +1,8 @@
-0 =i
-
-start:
-	$i 1 + =i
-	$i 100 > end!
-	start!
-
-1 wait
-end:
+1 1 = e!
+x:
+30 wait
+y:
+20 wait
+z:
+10 wait
+e:

@@ -15,15 +15,10 @@ func takeLabels(code *Code) (labs map[string]int) {
 	// Need to remember that to make precise labels work
 	var instruction = 0
 
-	// Everytime we delete something then all the elements shifts
-	// Need to be up to that shifts to not miss after couple of them
-	var shift = 0
-
 	// Loop
 	for _, op := range code.Operations {
 		if op.Type == OP_SPEC_DEF_LABEL {
-			labs[op.Args[0]] = instruction - shift
-			shift += op.Type.Steps
+			labs[op.Args[0]] = instruction
 			continue
 		}
 		// Increase instruction
